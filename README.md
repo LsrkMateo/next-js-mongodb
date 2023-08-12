@@ -113,10 +113,109 @@ console.log("mongoose error: " + err);
 });
 
 ```
-## Config schema and requests get and post
+
+## Config schema and requests get and post (commit)
 
 Se crea la carpeta models junto con el arhivo de Task.js para especificar como se va a guardar la informacion en la base de datos
 
 #### importante tener en cuenta que:
 
 un modelo es una funcion que permite operar con la base de datos, el esquema es la definicion de lo que va a venir en la base de datos
+
+```
+import { Schema, model, models } from "mongoose";
+
+```
+
+Luego se crea un objeto con lo que se espera recibir de la peticion http
+
+```
+const taskSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "El titulo es requerido"],
+      unique: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: [true, "El titulo es requerido"],
+      trim: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+```
+
+trim sirve para formatear la informacion pasada, timestamps : true genera una etiqueta de la fecha en la que fue generada la peticion, en este caso el esquema funciona para generar tareas en una aplicacion de tareas.
+
+Por ultimo se exporta la funcion de forma que si existe Task en models la use si no existe la crea
+
+```
+export default models.Task || model("Task", taskSchema);
+
+```
+
+se modifica el archivo rotue.js de /tasks/:
+
+```
+export async function GET() {
+  conectDB();
+  const tasks = await Task.find();
+  return NextResponse.json(tasks);
+}
+```
+
+se utiliza `Task.find()` para encontrar todos las `tareas` creadas en la base de datos, en el caso del metodo post se utiliza `newTask.save()` para guardar la tarea en la base de datos:
+
+```
+export async function POST(request) {
+  try {
+    const data = await request.json();
+    const newTask = new Task(data);
+    const savedTask = await newTask.save();
+
+    return NextResponse.json(savedTask);
+  } catch (error) {
+    return NextResponse.json(error.message, { status: 400 });
+  }
+}
+```
+
+## Config PUT and GET requests from dinamic url (commit):
+
+para el metodo get de la direccion dinamica se hace uso del `params` para obtener el `request_id` el cual nos sirve para obtener la tarea correspontiente a la id, usando el medoto `Task.findById`
+
+```
+export async function GET(request, { params }) {
+  try {
+    conectDB();
+    const taskFound = await Task.findById(params.task_id);
+    if (!taskFound)
+      return NextResponse.json({ message: "Task not found" }, { status: 404 });
+
+    return NextResponse.json(taskFound);
+  } catch (error) {
+    return NextResponse.json({ message: error.message }, { status: 400 });
+  }
+}
+```
+
+Al igual que el metodo GET, el metodo PUT utiliza params para obtener el id del `task` a modificar asi como el `request`, el cual sera la nueva informacion de la `task`, en este caso se usa el metodo `Task.findByIdAndUpdate`
+
+```
+export async function PUT(request, { params }) {
+  try {
+    const data = await request.json();
+    const updatedTask = await Task.findByIdAndUpdate(params.task_id, data, {
+      new: true, // return updated task
+    });
+    return NextResponse.json(updatedTask);
+  } catch (error) {
+    return NextResponse.json(error.message, { status: 400 });
+  }
+}
+```
