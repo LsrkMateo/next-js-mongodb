@@ -57,4 +57,10 @@ En este caso se utiliza la destructuracion del segundo paramentro el cual es `{p
 
 ---
 
-se hace lo  mismo con una preticion delete, esta vez concatenado el valor del `params` en la respuesta de next
+Se hace lo  mismo con una peticion delete, esta vez concatenado el valor del `params` en la respuesta de next
+
+Se añade la peticion PUT y DELETE
+
+**se requiere mongodb instalado localmente e importar el modulo mongoose en el proyecto (npm i mongoose): link de guia de instalacion de mongodb en ubuntu: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/** 
+
+Se crea un archivo **mongoose.js** dentro de **utils** 
