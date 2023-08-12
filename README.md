@@ -2,7 +2,10 @@
 
 lo siguiente se escribio a medida de que el proyecto se fue realizando:
 
+## create the proyect commit:
+
 ### configuracion inicial (npx create-next-app):
+
 - sin typescript
 - con eslint
 - con tailwind css
@@ -14,7 +17,10 @@ Se hace una breve limpieza removiendo la platilla que usa next y eliminando los 
 
 creacion de carpeta **components** en donde se almacenaran componentes de react, carpeta **utils** para conexion con mongodb
 
-se crea el archivo route.js dentro de src/api/ping para creacion rutas de back end que comuniquen con la base de datos, este archivo importa:
+## Config route handlers (commit)
+
+Se crea el archivo `route.js` dentro de `src/api/ping` para creacion rutas de back end que comuniquen con la base de datos, este archivo importa:
+
 ```
 import { NextResponse } from "next/server";
 ```
@@ -26,17 +32,21 @@ export function GET() {
   return NextResponse.json({ message: "hola mundo" });
 }
 ```
-Se crea la ruta tasks la cual contiene un route.js que tambien responde a peticiones post, adicional, se crea una carpeta dentro de tasks la cual es dinamica: `[id]` y tiene un route.js el cual recoge el valor de la ruta y lo imprime respondiendo al metodo **GET**, esto lo hace de la siguiente forma: 
+
+Se crea la ruta tasks la cual contiene un route.js que tambien responde a peticiones post, adicional, se crea una carpeta dentro de tasks la cual es dinamica: `[id]` y tiene un route.js el cual recoge el valor de la ruta y lo imprime respondiendo al metodo **GET**, esto lo hace de la siguiente forma:
+
 ```
 export function GET(request, { params }) {
   console.log(params);
   return NextResponse.json({ message: "obteniendo tarea" });
 }
 ```
-Donde **request** es la informacion que viene desde el cliente, a continuación una lista de infromacion que se puede optener de este parametro: 
+
+### documentacion uso de parametro request
+
+Donde **request** es la informacion que viene desde el cliente, a continuación una lista de infromacion que se puede optener de este parametro:
 
 1. Método HTTP: Puedes obtener el método HTTP utilizado en la solicitud, como GET, POST, PUT, DELETE, etc. Esto te permite determinar qué acción debe tomar el servidor en respuesta a la solicitud.
-   
 2. Ruta (URL): Puedes acceder a la URL completa de la solicitud, lo que te permite entender qué endpoint de la API está siendo accedido.
 3. Cabeceras (Headers): Las cabeceras HTTP contienen información adicional sobre la solicitud, como el tipo de contenido que el cliente acepta o envía, la autenticación, la codificación de contenido, etc.
 4. Parámetros de consulta (Query Parameters): Si la solicitud incluye parámetros de consulta en la URL, puedes extraer estos valores del objeto "request". Estos parámetros son comúnmente utilizados para filtrar, paginar o ajustar los resultados de una solicitud.
@@ -46,6 +56,8 @@ Donde **request** es la informacion que viene desde el cliente, a continuación 
 8. Autenticación: Si se requiere autenticación para acceder a ciertos recursos, puedes obtener los datos de autenticación de la solicitud para verificar la identidad del cliente.
 9. Token de seguridad: Si estás utilizando algún tipo de autenticación basada en tokens (como JWT), el token puede estar presente en la solicitud y se puede extraer para verificar la autorización.
 10. Otros detalles específicos del framework: Dependiendo del framework o la biblioteca que estés utilizando para construir tu API, es posible que haya más detalles disponibles en el objeto "request", como información sobre enrutamiento, validación de datos, etc.
+
+### Documentacion parametro {params}:
 
 En este caso se utiliza la destructuracion del segundo paramentro el cual es `{params}`, este puede devolver lo siguiente:
 
@@ -57,10 +69,54 @@ En este caso se utiliza la destructuracion del segundo paramentro el cual es `{p
 
 ---
 
-Se hace lo  mismo con una peticion delete, esta vez concatenado el valor del `params` en la respuesta de next
+Se hace lo mismo con una peticion delete, esta vez concatenado el valor del `params` en la respuesta de next
 
 Se añade la peticion PUT y DELETE
 
-**se requiere mongodb instalado localmente e importar el modulo mongoose en el proyecto (npm i mongoose): link de guia de instalacion de mongodb en ubuntu: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/** 
+## Add conection with mongoDB (commit)
 
-Se crea un archivo **mongoose.js** dentro de **utils** 
+**se requiere mongodb instalado localmente e importar el modulo mongoose en el proyecto (npm i mongoose): link de guia de instalacion de mongodb en ubuntu: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/**
+
+Se crea un archivo **mongoose.js** dentro de **utils** el cual sera encargado de conectarse con la base de datos
+
+dentro de mongoose.js, se importan metodos connect, y connection para la propia conexion a la base de datos
+
+```
+import { connect, connection } from "mongoose";
+const conn = {
+  isConnected: false,
+};
+```
+
+Se crea una funcion para la conectarse a la DB
+
+```
+export async function conectDB() {
+if (conn.isConnected) return; // si ya esta conectado no volver a establecer coneccion
+// establecer coneccion
+const db = await connect("mongodb://localhost/next-mongo-crud");
+console.log(db.connection.db.databaseName);
+conn.isConnected = db.connections[0].readyState; // devuelve verdadero si es uno, devuleve uno si esta conectado
+}
+
+```
+
+por ultimo se crean funciones que responden a los enventos `connected` y `error`
+
+```
+connection.on("connected", () => {
+console.log("base de datos mongoose se ha conectado con exito");
+});
+
+connection.on("error", (err) => {
+console.log("mongoose error: " + err);
+});
+
+```
+## Config schema and requests get and post
+
+Se crea la carpeta models junto con el arhivo de Task.js para especificar como se va a guardar la informacion en la base de datos
+
+#### importante tener en cuenta que:
+
+un modelo es una funcion que permite operar con la base de datos, el esquema es la definicion de lo que va a venir en la base de datos
