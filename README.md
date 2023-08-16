@@ -2,6 +2,12 @@
 
 lo siguiente se escribio a medida de que el proyecto se fue realizando:
 
+#### funcion principal de la aplicacion
+
+el proyecto es fundamentalmente una aplicacion de toma de notas, el tipo de aplicacion mas util a la hora de aprender hacer un CRUD en cualquier lenguaje o tecnologia, en este caso se usa next-js como framework de fornt-end el cual hace uso de un servidor de express el cual se coneccta con una base de datos mongo-db 
+
+Como programador semi-principiante de next-js intente seguir paso a paso el siguiente tutorial: https://www.youtube.com/watch?v=CkiuF2wsPRg documentare commit por commit el proceso llevado a cabo, explicando detalladamente el porque de cada commit, cabe resaltar que la intencion de deste repositorio no es solo almacenar informacion sobre como crear una aplicacion en next js usando mongo db como base de datos, mas alla de eso la intencion es invitar a contribuir y testear a usuarios cuya experiencia es mas avanzada, ademas de servir de apoyo para personas no tan experimentadas.
+
 ## create the proyect commit:
 
 ### configuracion inicial (npx create-next-app):
