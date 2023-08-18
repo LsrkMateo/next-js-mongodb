@@ -225,3 +225,7 @@ export async function PUT(request, { params }) {
   }
 }
 ```
+
+## Config delete request (commit):
+
+Se configura la petición delete, se utiliza `{params}` para utilizar el metodo `Task.findByIdAndDelete` y se generan las condicionales correspondientes

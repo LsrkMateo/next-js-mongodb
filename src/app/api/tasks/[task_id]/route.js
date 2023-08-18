@@ -15,8 +15,22 @@ export async function GET(request, { params }) {
   }
 }
 
-export function DELETE(request, { params }) {
-  return NextResponse.json({ message: `eliminando tarea ${params.task_id}` });
+export async function DELETE(request, { params }) {
+  try {
+    const taskDeleted = await Task.findByIdAndDelete(params.task_id);
+    if (!taskDeleted)
+      return NextResponse.json(
+        {
+          message: "Tarea no encontrada",
+        },
+        {
+          status: 404,
+        }
+      );
+    return NextResponse.json(taskDeleted);
+  } catch (error) {
+    return NextResponse.json(error.message, { status: 404 });
+  }
 }
 
 export async function PUT(request, { params }) {
