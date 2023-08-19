@@ -1,6 +1,6 @@
-import { conectDB } from "@/utils/mongoose";
-import Task from "@/models/Task";
-import TaskCard from "@/components/TaskCard";
+import { conectDB } from "../utils/mongoose";
+import Task from "../models/Task";
+import TaskCard from "../components/TaskCard";
 async function loadTasks() {
   conectDB();
   const tasks = await Task.find();

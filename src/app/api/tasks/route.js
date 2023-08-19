@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { conectDB } from "@/utils/mongoose";
-import Task from "@/models/Task";
+import { conectDB } from "../../../utils/mongoose";
+import Task from "../../../models/Task";
 export async function GET() {
   conectDB();
   const tasks = await Task.find();
