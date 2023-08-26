@@ -232,3 +232,13 @@ Se configura la petición delete, se utiliza `{params}` para utilizar el metodo 
 
 ## Add basic styling for the frontend (commit)
 
+Se crea el componente `TaskCard` para funcionar de forma reutilizable, este se incorpora en el page mediante la funcion `loadTasks` por utlimo se hace un `map` para imprimir todas las tareas de la base de datos. Durante todo este proceso se incorporan clases de tailwind css.
+
+## Add a form that post tasks (commit)
+
+
+Se actualiza la version de NodeJS, y principalmetne se crea la ruta de creacion de nuevas tareas, (!!!!!!!! terminar !!!!!!!!!!)
+
+---
+
+(Proyecto en proceso de desarrollo)
