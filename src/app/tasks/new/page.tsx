@@ -27,6 +27,30 @@ function formPage() {
       console.log(error);
     }
   };
+  const getTask = async () => {
+    const res = await fetch(`/api/tasks/${params.id}`);
+    const data = await res.json();
+    console.log(data);
+    setNewTask({
+      title: data.title,
+      description: data.description,
+    });
+  };
+
+  const updateTask = async () => {
+    try {
+      const res = await fetch(`/api/tasks/${params.id} `, {
+        method: "PUT",
+        body: JSON.stringify(newTask),
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = res.json();
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.log(error)
+    }
+  };
   const handlechange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -35,8 +59,11 @@ function formPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(newTask);
-    await createTask();
+    if (!params.id) {
+      await createTask();
+    } else {
+      updateTask();
+    }
   };
 
   const handleDelete = async () => {
@@ -54,7 +81,9 @@ function formPage() {
   };
 
   useEffect(() => {
-    console.log(params);
+    if (params.id) {
+      getTask();
+    }
   }, []);
   return (
     <div className="h-[calc(100vh-7rem)] flex justify-center items-center">
@@ -78,6 +107,7 @@ function formPage() {
           placeholder="Title"
           className="bg-grey-800 border-2 w-full p-4 rounded-lg my-4"
           onChange={handlechange}
+          value={newTask.title}
         />
         <textarea
           name="description"
@@ -85,12 +115,13 @@ function formPage() {
           rows={3}
           className="bg-grey-800 border-2 w-full p-4 rounded-lg my-4"
           onChange={handlechange}
+          value={newTask.description}
         ></textarea>
         <button
           type="submit"
           className="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg"
         >
-          save
+          {!params.id ? "create" : "update"}
         </button>
       </form>
     </div>
