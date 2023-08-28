@@ -2,11 +2,15 @@
 
 import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Modal from "../../../components/modal";
 
 function formPage() {
   const [newTask, setNewTask] = useState({ title: "", description: "" });
   const router = useRouter();
   const params = useParams();
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   const createTask = async () => {
     try {
@@ -20,9 +24,15 @@ function formPage() {
       const data = await res.json();
 
       if (res.status === 200) {
-        router.push("/");
+        setShowModal(true);
+        setModalMessage("Tarea creada exitosamente.");
+        setTimeout(() => {
+          setShowModal(false);
+          setModalMessage("");
+          router.push("/");
+          router.refresh();
+        }, 500);
       }
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -39,16 +49,25 @@ function formPage() {
 
   const updateTask = async () => {
     try {
-      const res = await fetch(`/api/tasks/${params.id} `, {
+      const res = await fetch(`/api/tasks/${params.id}`, {
         method: "PUT",
         body: JSON.stringify(newTask),
         headers: { "Content-Type": "application/json" },
       });
-      const data = res.json();
-      router.push("/");
-      router.refresh();
+      const data = await res.json();
+
+      if (res.status === 200) {
+        setShowModal(true);
+        setModalMessage("Tarea actualizada exitosamente.");
+        setTimeout(() => {
+          setShowModal(false);
+          setModalMessage("");
+          router.push("/");
+          router.refresh();
+        }, 500);
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
   const handlechange = (
@@ -72,8 +91,16 @@ function formPage() {
         const res = await fetch(`/api/tasks/${params.id}`, {
           method: "DELETE",
         });
-        router.push(`/`);
-        router.refresh();
+        if (res.status === 200) {
+          setShowModal(true);
+          setModalMessage("Tarea eliminada exitosamente.");
+          setTimeout(() => {
+            setShowModal(false);
+            setModalMessage("");
+            router.push("/");
+            router.refresh();
+          }, 500);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -90,7 +117,7 @@ function formPage() {
       <form action="" onSubmit={handleSubmit}>
         <header className="flex justify-between">
           <h1 className="font-bold text-3xl">
-            {!params.id ? "Create task" : "Update task"}
+            {!params.id ? "Crear tarea" : "Actualizar tarea"}
           </h1>
 
           <button
@@ -98,7 +125,7 @@ function formPage() {
             className="bg-red-500 px-3 py-1 rounded-md"
             onClick={handleDelete}
           >
-            Delete
+            Eliminar tarea
           </button>
         </header>
         <input
@@ -121,9 +148,10 @@ function formPage() {
           type="submit"
           className="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg"
         >
-          {!params.id ? "create" : "update"}
+          {!params.id ? "Crear" : "Actualizar"}
         </button>
       </form>
+      {showModal && <Modal message={modalMessage} />}
     </div>
   );
 }
